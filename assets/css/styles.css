@@ -1,0 +1,42 @@
+body {
+    height: 100vh;
+}
+
+header {
+    background-color: blue;
+}
+
+h1 {
+    font-size: 2rem;
+    text-align: center;
+    padding: .5em 0;
+}
+
+main {
+    display: flex;
+}
+
+aside {
+    width: 25%;
+    margin: .5rem;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 1.5rem;
+    font-weight: bolder;
+    padding: .2em;
+}
+
+input {
+    padding: .2em;
+}
+
+button {
+    padding: .2em;
+    margin: .7rem 0;
+}
