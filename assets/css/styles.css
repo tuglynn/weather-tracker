@@ -40,3 +40,8 @@ button {
     padding: .2em;
     margin: .7rem 0;
 }
+
+.searched-cities {
+    display: flex;
+    flex-direction: column;
+}

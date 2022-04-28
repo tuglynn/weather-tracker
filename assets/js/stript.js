@@ -2,6 +2,7 @@ var cityInput = document.querySelector('#city-search');
 var weatherToday = document.querySelector('.todays-weather');
 var forecastDisplay = document.querySelector('.forecast');
 var formSubmit = document.querySelector('.form-submit');
+var cityList = document.querySelector('.searched-cities');
 
 
 // function displayWeather() {
@@ -20,8 +21,12 @@ function fetchWeather(location) {
             cityName.textContent = cityInput.value;
             weatherToday.appendChild(cityName);
             let currentTemp = document.createElement('h3');
-            currentTemp.textContent = data.main.temp;
+            currentTemp.textContent = `${data.main.temp} F`;
             weatherToday.appendChild(currentTemp);
+            let cityButton = document.createElement('button');
+            cityButton.textContent = cityInput.value;
+            cityList.appendChild(cityButton);
+
 
         })
 }
@@ -31,5 +36,6 @@ function fetchWeather(location) {
 formSubmit.addEventListener('click', function (event) {
     event.preventDefault();
     console.log('click');
+    weatherToday.innerHTML = '';
     fetchWeather(cityInput.value);
 })
