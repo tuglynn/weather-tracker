@@ -41,6 +41,27 @@ button {
     margin: .7rem 0;
 }
 
+.todays-weather {
+    margin: auto;
+    margin-top: 2rem;
+    padding: 2em 8em;
+    border-radius: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h2 {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 1.4rem;
+    padding: .5em;
+}
+
 .searched-cities {
     display: flex;
     flex-direction: column;
