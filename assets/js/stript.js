@@ -1,11 +1,10 @@
 var cityInput = document.querySelector('#city-search');
 var weatherToday = document.querySelector('.todays-weather');
-var forecastDisplay = document.querySelector('.forecast');
+var forecastDiv = document.querySelector('.forecast');
 var formSubmit = document.querySelector('.form-submit');
 var cityList = document.querySelector('.searched-cities');
 var listOfCities = []
 
-var todaysWeatherArray = ['.name', '.weather.icon', '`${.main.temp} F`', '.main.feels_like', '.wind.speed', '.main.humidity', '.main.temp_min', '.main.temp_max', ]
 /* array of data:
 main page
 city name, date, icon => (weather.icon)???
@@ -35,58 +34,90 @@ init();
 
 
 function fetchWeather(location) {
-
-    console.log(location)
     // here is the main api call. We are searching by city name.
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=1be3897da6ee591e578a9ef71854ca76&units=imperial`)
         .then(response => response.json()) // this line converts the response to JSON so our browser can read the data
         .then(function (data) {
             console.log(data);
-
+            //stores the user input as a var
             let city = location.replace(' ', '-');
-
+            //clears the search bar
             cityInput.value = '';
+            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly,alerts&appid=1be3897da6ee591e578a9ef71854ca76&units=imperial`)
+                .then(response => response.json())
+                .then(function (forecastData) {
+                    console.log(forecastData)
 
-            function displayWeather(event) {
-                weatherToday.innerHTML = ''; // this clears whatever city info was in the main div
-                weatherToday.setAttribute('style', 'border: 2px solid #000000;')
-                // this grabs the data from localStorage to display on the page
-                let cityWeatherData = JSON.parse(localStorage.getItem(city))
-                let cityName = document.createElement('h2');
-                var iconURL = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`;
-                var iconEl = document.createElement('img')
-                iconEl.setAttribute('src', iconURL);
-                // this grabs the cities name
-                cityName.textContent = `${data.name}`;
-                weatherToday.appendChild(cityName);
-                weatherToday.appendChild(iconEl);
-                let currentTemp = document.createElement('h3');
-                // this grabs the current temperature 
-                currentTemp.textContent = `Current Temp: ${data.main.temp} F`;
-                weatherToday.appendChild(currentTemp);
-                let windSpeed = document.createElement('h3');
-                windSpeed.textContent = `Wind Speed: ${data.wind.speed} MPH`
-                weatherToday.appendChild(windSpeed);
-                let humid = document.createElement('h3');
-                humid.textContent = `Humidity: ${data.main.humidity} %`;
-                weatherToday.appendChild(humid);
+                    function displayWeather(event) {
+                        weatherToday.innerHTML = ''; // this clears whatever city info was in the main div
+                        weatherToday.setAttribute('style', 'border: 2px solid #000000; background-color: #3a6eb2de;') // creates the border of the weather box
+                        // this grabs the data from localStorage to display on the page
+                        var cityName = document.createElement('h2');
+                        var iconURL = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+                        var iconEl = document.createElement('img')
+                        iconEl.setAttribute('src', iconURL);
+                        // this grabs the cities name
+                        cityName.textContent = `${data.name}`;
+                        weatherToday.appendChild(cityName);
+                        weatherToday.appendChild(iconEl);
+                        var currentTemp = document.createElement('h3');
+                        // this grabs the current temperature 
+                        currentTemp.textContent = `Current Temp: ${data.main.temp} F`;
+                        weatherToday.appendChild(currentTemp);
+                        var windSpeed = document.createElement('h3');
+                        windSpeed.textContent = `Wind Speed: ${data.wind.speed} MPH`
+                        weatherToday.appendChild(windSpeed);
+                        var humid = document.createElement('h3');
+                        humid.textContent = `Humidity: ${data.main.humidity} %`;
+                        weatherToday.appendChild(humid);
+                        var uvIndex = document.createElement('h3');
+                        uvIndex.textContent = `UV index ${forecastData.current.uvi}`;
+                        weatherToday.appendChild(uvIndex);
 
 
-                // this creates the city button on the list
-                console.log(city)
-                if (!redundancyCheck(city)) {
-                    console.log('the limit does not exist (actually this city is in the array already)')
-                    return
-                }
-                saveToLocal(city)
+                        // this creates the city button on the list
+                        console.log(city)
+                        if (!redundancyCheck(city)) {
+                            console.log('the limit does not exist (actually this city is in the array already)')
+                            return
+                        }
+                        saveToLocal(city)
 
-                let cityButton = document.createElement('button')
-                cityButton.textContent = data.name;
-                cityButton.setAttribute('class', city);
-                cityList.appendChild(cityButton);
-            }
-            displayWeather();
+                        let cityButton = document.createElement('button')
+                        cityButton.textContent = data.name;
+                        cityButton.setAttribute('class', city);
+                        cityList.appendChild(cityButton);
+                    }
+                    displayWeather();
+                    displayForecast(forecastData);
+                })
         })
+}
+
+function displayForecast(data) {
+    forecastDiv.innerHTML = '';
+    for (var i = 0; i < 5; i++) {
+
+        var cardDiv = document.createElement('div');
+        cardDiv.setAttribute('class', 'forecast-card');
+        forecastDiv.appendChild(cardDiv);
+        var dateEl = document.createElement('h4');
+        var unixCode = new Date(data.daily[i].dt);
+        var theDate = unixCode.toDateString();
+        dateEl.textContent = theDate;
+        cardDiv.appendChild(dateEl)
+        var iconURL = `https://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png`;
+        var iconEl = document.createElement('img')
+        iconEl.setAttribute('src', iconURL);
+        cardDiv.appendChild(iconEl);
+        var dayTemp = document.createElement('h4');
+        // this grabs the current temperature 
+        dayTemp.textContent = `Temp: ${data.daily[i].temp.day} F`;
+        cardDiv.appendChild(dayTemp);
+        var humid = document.createElement('h4');
+        humid.textContent = `Humidity: ${data.daily[i].humidity} %`;
+        cardDiv.appendChild(humid);
+    }
 }
 
 function redundancyCheck(city) {
@@ -98,7 +129,6 @@ function redundancyCheck(city) {
 
     return true
 }
-
 
 
 function saveToLocal(city) {
@@ -116,6 +146,9 @@ formSubmit.addEventListener('click', function (event) {
 
 cityList.addEventListener('click', function (event) {
     let citySpacedName = event.target.className.replace('-', ' ');
-    console.log(citySpacedName);
-    fetchWeather(citySpacedName);
+    console.log(event);
+
+    if (event.path.includes('button')) {
+        fetchWeather(citySpacedName);
+    } else return console.log('nope')
 })

@@ -1,13 +1,19 @@
+* {
+    font-family: 'Nunito', sans-serif;
+}
+
 body {
     height: 100vh;
+    background-color: #cecad2;
 }
 
 header {
-    background-color: blue;
+    background-color: #3a6eb2de;
 }
 
 h1 {
     font-size: 2rem;
+    letter-spacing: .2rem;
     text-align: center;
     padding: .5em 0;
 }
@@ -26,10 +32,12 @@ aside {
     flex-direction: column;
 }
 
+
 label {
     font-size: 1.5rem;
     font-weight: bolder;
     padding: .2em;
+    margin-bottom: .5rem;
 }
 
 input {
@@ -37,8 +45,14 @@ input {
 }
 
 button {
+    background-color: #a8c6edde;
     padding: .2em;
     margin: .7rem 0;
+    border-radius: 1em;
+}
+
+.form-submit {
+    background-color: #3e87e7de;
 }
 
 .todays-weather {
@@ -62,7 +76,36 @@ h3 {
     padding: .5em;
 }
 
+h4 {
+    font-size: 1rem;
+    padding: .5em;
+}
+
 .searched-cities {
     display: flex;
     flex-direction: column;
+}
+
+.forecast {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.forecast-card {
+    background-color: #3a6eb2de;
+    margin: auto;
+    border: 2px solid #000000;
+    border-radius: 1em;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #c3edfdde;
+    cursor: pointer;
+}
+
+.form-submit:hover {
+    background-color: #6ca5f0de;
 }
