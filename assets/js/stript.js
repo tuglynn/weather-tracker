@@ -2,31 +2,20 @@ var cityInput = document.querySelector('#city-search');
 var weatherToday = document.querySelector('.todays-weather');
 var forecastDiv = document.querySelector('.forecast');
 var formSubmit = document.querySelector('.form-submit');
-var cityList = document.querySelector('.searched-cities');
+var cityList = document.querySelector('#searched-cities');
 var listOfCities = []
-
-/* array of data:
-main page
-city name, date, icon => (weather.icon)???
-temp, feels_like wind speed(wind[speed]), humidity, uv index, temp_max, temp_min,
-5day forecast
-date, icon
-temp, wind, humidity    
- */
 
 if (localStorage.getItem('savedCity')) {
     listOfCities = JSON.parse(localStorage.getItem('savedCity'))
 }
 
 function init() {
-    let storedCities = JSON.parse(localStorage.getItem('savedCity'))
-    if (storedCities == null) return;
-    console.log(storedCities);
-    for (let city of storedCities) {
-        let cityButton = document.createElement('button');
-        cityButton.textContent = city.replace('-', ' ');
-        cityButton.setAttribute('class', city);
-        cityList.appendChild(cityButton);
+
+    if (localStorage.getItem('savedCity')) {
+        listOfCities = JSON.parse(localStorage.getItem('savedCity'))
+    }
+    for (let city of listOfCities) {
+        cityList.innerHTML += `<button class="${city}">${city.replace('-', ' ')}</button>`
     }
 }
 
@@ -49,44 +38,26 @@ function fetchWeather(location) {
                     console.log(forecastData)
 
                     function displayWeather(event) {
-                        weatherToday.innerHTML = ''; // this clears whatever city info was in the main div
                         weatherToday.setAttribute('style', 'border: 2px solid #000000; background-color: #3a6eb2de;') // creates the border of the weather box
                         // this grabs the data from localStorage to display on the page
-                        var cityName = document.createElement('h2');
-                        var iconURL = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`;
-                        var iconEl = document.createElement('img')
-                        iconEl.setAttribute('src', iconURL);
-                        // this grabs the cities name
-                        cityName.textContent = `${data.name}`;
-                        weatherToday.appendChild(cityName);
-                        weatherToday.appendChild(iconEl);
-                        var currentTemp = document.createElement('h3');
-                        // this grabs the current temperature 
-                        currentTemp.textContent = `Current Temp: ${data.main.temp} F`;
-                        weatherToday.appendChild(currentTemp);
-                        var windSpeed = document.createElement('h3');
-                        windSpeed.textContent = `Wind Speed: ${data.wind.speed} MPH`
-                        weatherToday.appendChild(windSpeed);
-                        var humid = document.createElement('h3');
-                        humid.textContent = `Humidity: ${data.main.humidity} %`;
-                        weatherToday.appendChild(humid);
-                        var uvIndex = document.createElement('h3');
-                        uvIndex.textContent = `UV index ${forecastData.current.uvi}`;
-                        weatherToday.appendChild(uvIndex);
+                        var unixCode = new Date(data.dt * 1000);
+                        var theDate = unixCode.toDateString();
 
+                        weatherToday.innerHTML = `<h3>${theDate}</h3>
+                        <h2>${data.name} <img src="https://openweathermap.org/img/w/${data.weather[0].icon}.png"></h2>
+                        <h3>Current Temp: ${data.main.temp} F</h3>
+                        <h3>Wind Speed: ${data.wind.speed} MPH</h3>
+                        <h3>Humidity: ${data.main.humidity} %</h3>
+                        <h3>UV index ${forecastData.current.uvi}</h3>`
 
                         // this creates the city button on the list
                         console.log(city)
                         if (!redundancyCheck(city)) {
-                            console.log('the limit does not exist (actually this city is in the array already)')
                             return
                         }
                         saveToLocal(city)
 
-                        let cityButton = document.createElement('button')
-                        cityButton.textContent = data.name;
-                        cityButton.setAttribute('class', city);
-                        cityList.appendChild(cityButton);
+                        cityList.innerHTML += `<button class="${city}">${data.name}</button>`
                     }
                     displayWeather();
                     displayForecast(forecastData);
@@ -97,31 +68,20 @@ function fetchWeather(location) {
 function displayForecast(data) {
     forecastDiv.innerHTML = '';
     for (var i = 0; i < 5; i++) {
-
-        var cardDiv = document.createElement('div');
-        cardDiv.setAttribute('class', 'forecast-card');
-        forecastDiv.appendChild(cardDiv);
         var dateEl = document.createElement('h4');
-        var unixCode = new Date(data.daily[i].dt);
+        var unixCode = new Date(data.daily[i].dt * 1000);
         var theDate = unixCode.toDateString();
-        dateEl.textContent = theDate;
-        cardDiv.appendChild(dateEl)
-        var iconURL = `https://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png`;
-        var iconEl = document.createElement('img')
-        iconEl.setAttribute('src', iconURL);
-        cardDiv.appendChild(iconEl);
-        var dayTemp = document.createElement('h4');
-        // this grabs the current temperature 
-        dayTemp.textContent = `Temp: ${data.daily[i].temp.day} F`;
-        cardDiv.appendChild(dayTemp);
-        var humid = document.createElement('h4');
-        humid.textContent = `Humidity: ${data.daily[i].humidity} %`;
-        cardDiv.appendChild(humid);
+        forecastDiv.innerHTML += `<div class="forecast-card">
+        <h4>${theDate}</h4>
+        <img src="https://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png">
+        <h4>Temp: ${data.daily[i].temp.day} F</h4>
+        <h4>Humidity: ${data.daily[i].humidity} %</h4>
+        </div>`
     }
 }
 
 function redundancyCheck(city) {
-    for (let i = 0; i < listOfCities.length; i++) {
+    for (var i = 0; i < listOfCities.length; i++) {
         if (listOfCities[i].toLowerCase() === city.toLowerCase()) {
             return false
         }
@@ -130,10 +90,8 @@ function redundancyCheck(city) {
     return true
 }
 
-
 function saveToLocal(city) {
     listOfCities.push(city);
-    console.log(city);
     //save data to localStorage under variable name of the city.
     localStorage.setItem('savedCity', JSON.stringify(listOfCities));
 }
@@ -141,14 +99,20 @@ function saveToLocal(city) {
 
 formSubmit.addEventListener('click', function (event) {
     event.preventDefault();
-    fetchWeather(cityInput.value.trim());
+    if (!cityInput.value) {
+        weatherToday.innerHTML = '<p>Please enter a city name</p>'
+        return
+    } else {
+        fetchWeather(cityInput.value.trim());
+    }
 })
 
 cityList.addEventListener('click', function (event) {
-    let citySpacedName = event.target.className.replace('-', ' ');
-    console.log(event);
-
-    if (event.path.includes('button')) {
+    if (event.target.id == 'searched-cities') {
+        console.log('not a button');
+        return false
+    } else {
+        let citySpacedName = event.target.className.replace('-', ' ');
         fetchWeather(citySpacedName);
-    } else return console.log('nope')
+    }
 })

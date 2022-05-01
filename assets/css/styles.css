@@ -81,7 +81,7 @@ h4 {
     padding: .5em;
 }
 
-.searched-cities {
+#searched-cities {
     display: flex;
     flex-direction: column;
 }
@@ -95,7 +95,6 @@ h4 {
 
 .forecast-card {
     background-color: #3a6eb2de;
-    margin: auto;
     border: 2px solid #000000;
     border-radius: 1em;
     text-align: center;
