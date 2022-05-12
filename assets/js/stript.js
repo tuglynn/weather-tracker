@@ -26,7 +26,7 @@ function fetchWeather(location) {
     // here is the main api call. We are searching by city name.
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=1be3897da6ee591e578a9ef71854ca76&units=imperial`)
         .then(response => response.json()) // this line converts the response to JSON so our browser can read the data
-        .then(function (data) {
+        .then((data) => {
             console.log(data);
             //stores the user input as a var
             let city = location.replace(' ', '-');
