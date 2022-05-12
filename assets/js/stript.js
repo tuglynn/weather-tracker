@@ -1,9 +1,9 @@
-var cityInput = document.querySelector('#city-search');
-var weatherToday = document.querySelector('.todays-weather');
-var forecastDiv = document.querySelector('.forecast');
-var formSubmit = document.querySelector('.form-submit');
-var cityList = document.querySelector('#searched-cities');
-var listOfCities = []
+const cityInput = document.querySelector('#city-search');
+const weatherToday = document.querySelector('.todays-weather');
+const forecastDiv = document.querySelector('.forecast');
+const formSubmit = document.querySelector('.form-submit');
+const cityList = document.querySelector('#searched-cities');
+let listOfCities = []
 
 if (localStorage.getItem('savedCity')) {
     listOfCities = JSON.parse(localStorage.getItem('savedCity'))
@@ -34,14 +34,14 @@ function fetchWeather(location) {
             cityInput.value = '';
             fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly,alerts&appid=1be3897da6ee591e578a9ef71854ca76&units=imperial`)
                 .then(response => response.json())
-                .then(function (forecastData) {
+                .then((forecastData) => {
                     console.log(forecastData)
 
                     function displayWeather(event) {
                         weatherToday.setAttribute('style', 'border: 2px solid #000000; background-color: #3a6eb2de;') // creates the border of the weather box
                         // this grabs the data from localStorage to display on the page
-                        var unixCode = new Date(data.dt * 1000);
-                        var theDate = unixCode.toDateString();
+                        const unixCode = new Date(data.dt * 1000);
+                        const theDate = unixCode.toDateString();
 
                         weatherToday.innerHTML = `<h3>${theDate}</h3>
                         <h2>${data.name} <img src="https://openweathermap.org/img/w/${data.weather[0].icon}.png"></h2>
@@ -67,10 +67,9 @@ function fetchWeather(location) {
 
 function displayForecast(data) {
     forecastDiv.innerHTML = '';
-    for (var i = 0; i < 5; i++) {
-        var dateEl = document.createElement('h4');
-        var unixCode = new Date(data.daily[i].dt * 1000);
-        var theDate = unixCode.toDateString();
+    for (let i = 0; i < 5; i++) {
+        const unixCode = new Date(data.daily[i].dt * 1000);
+        const theDate = unixCode.toDateString();
         forecastDiv.innerHTML += `<div class="forecast-card">
         <h4>${theDate}</h4>
         <img src="https://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png">
@@ -81,7 +80,7 @@ function displayForecast(data) {
 }
 
 function redundancyCheck(city) {
-    for (var i = 0; i < listOfCities.length; i++) {
+    for (let i = 0; i < listOfCities.length; i++) {
         if (listOfCities[i].toLowerCase() === city.toLowerCase()) {
             return false
         }
@@ -97,7 +96,7 @@ function saveToLocal(city) {
 }
 
 
-formSubmit.addEventListener('click', function (event) {
+formSubmit.addEventListener('click', (event) => {
     event.preventDefault();
     if (!cityInput.value) {
         weatherToday.innerHTML = '<p>Please enter a city name</p>'
@@ -107,7 +106,7 @@ formSubmit.addEventListener('click', function (event) {
     }
 })
 
-cityList.addEventListener('click', function (event) {
+cityList.addEventListener('click', (event) => {
     if (event.target.id == 'searched-cities') {
         console.log('not a button');
         return false
