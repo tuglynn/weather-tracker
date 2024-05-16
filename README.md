@@ -1,6 +1,6 @@
 # weather-tracker
 A weather tracker app
-https://monacoglynn.github.io/weather-tracker/
+https://tuglynn.github.io/weather-tracker/
 
 ## Technologies used
 
